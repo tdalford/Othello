@@ -37,6 +37,11 @@ Player::~Player() {
 
 }
 
+Move * Player::minimax(int node, int depth, side player, bool isMaximising)
+{
+
+}
+
 /*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
@@ -59,7 +64,6 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     vector<Move> testMoves;
     vector<Move> badMoves;
     Move * moveToPlay = new Move(0,0);
-
 	
     if (board->hasMoves(side)) //check and find valid moves for black
     {
