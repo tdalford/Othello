@@ -53,30 +53,24 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    // std::cerr << "black = " << board->count(BLACK) << endl;
-    // std::cerr << "white = " << board->count(WHITE) << endl;
-    // std::cerr << "black = " << board->countBlack() << endl;
-    // std::cerr << "white = " << board->countWhite() << endl;
     board->doMove(opponentsMove, oppSide);
-    // std::cerr << "opponents's side = " << oppSide << std::endl;
-    // std::cerr << "x = " << opponentsMove->getX() << std::endl;
-    // std::cerr << "y = " << opponentsMove->getY() << std::endl;
-    // std::cerr << "made opponent's move" << std::endl;
     vector<Move> testMoves;
-    // std::cerr << "made vector" << std::endl;
 
-
+	std::cerr<<"Here 1" << std::endl;
+	
     if (board->hasMoves(side)) //check and find valid moves for black
     {
-        //std::cerr << "got in loop" << std::endl;
+		std::cerr<<"Here 2" << std::endl;
         for (int i = 0; i < 8; i++)
         {
+			std::cerr<<"Here 3" << std::endl;
             for (int j = 0; j < 8; j++)
             {
+				std::cerr<<"Here 4" << std::endl;
                 Move testMove(i, j);
-                //cerr << board.checkMove(&testMove, side) << endl;
                 if (board->checkMove(&testMove, side) == true)
                 {
+					std::cerr<<"Here 5" << std::endl;
                     testMoves.push_back(testMove);
                     std::cerr << "found available move" << testMove.getX() << " " << testMove.getY() << std::endl;
                 }
@@ -89,7 +83,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
 
     int randomIndex = rand() % testMoves.size();
-    Move moveToPlay = testMoves[randomIndex];
-    board->doMove(&moveToPlay, side);
-    return &moveToPlay;
+    Move * moveToPlay = new Move(0,0);
+	*moveToPlay = testMoves[randomIndex];
+    board->doMove(moveToPlay, side);
+    return moveToPlay;
 }
