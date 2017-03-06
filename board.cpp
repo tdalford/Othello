@@ -102,6 +102,50 @@ bool Board::checkMove(Move *m, Side side) {
     return false;
 }
 
+Move Board::findBestFlip(Move *m, Side side){
+	vector<Move> otherpieces;
+
+	// Passing is only legal if you have no moves.
+
+    int X = m->getX();
+    int Y = m->getY();
+
+    // Make sure the square hasn't already been taken.
+    Side other = (side == BLACK) ? WHITE : BLACK;
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            if (dy == 0 && dx == 0) continue;
+
+            // Is there a capture in that direction?
+            int x = X + dx;
+            int y = Y + dy;
+            if (onBoard(x, y) && get(other, x, y)) {
+                do {
+                    x += dx;
+                    y += dy;
+                } while (onBoard(x, y) && get(other, x, y));
+
+                if (onBoard(x, y) && get(side, x, y)){
+					otherpieces.push_back(Move(x,y));
+				}
+            }
+        }
+    }
+	Move bestmove = otherpieces[0];
+	for(unsigned int i=1; i<otherpieces.size(); i++)
+	{
+		if(std::fmax(std::abs(otherpieces[i].getX() - m->getX()), std::abs(otherpieces[i].getY() - m->getY())) >
+		   std::fmax(std::abs(bestmove.getX() - m->getX()), std::abs(bestmove.getY() - m->getY())))
+		{			
+			bestmove = otherpieces[i];
+		}
+	}
+	
+    return bestmove;
+}
+
+
+
 /*
  * Modifies the board to reflect the specified move.
  */

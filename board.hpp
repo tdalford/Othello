@@ -3,6 +3,8 @@
 
 #include <bitset>
 #include <iostream>
+#include <cmath>
+#include <vector>
 #include "common.hpp"
 using namespace std;
 
@@ -25,6 +27,7 @@ public:
     bool isDone();
     bool hasMoves(Side side);
     bool checkMove(Move *m, Side side);
+	Move findBestFlip(Move *m, Side side);
     void doMove(Move *m, Side side);
     int count(Side side);
     int countBlack();
