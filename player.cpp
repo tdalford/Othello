@@ -34,7 +34,7 @@ Player::Player(Side side) {
  */
 Player::~Player() {
     delete board;
-    
+
 }
 
 /*
@@ -57,6 +57,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      */
     board->doMove(opponentsMove, oppSide);
     vector<Move> testMoves;
+    vector<Move> badMoves;
+    Move * moveToPlay = new Move(0,0);
+
 	
     if (board->hasMoves(side)) //check and find valid moves for black
     {
@@ -67,7 +70,35 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                 Move testMove(i, j);
                 if (board->checkMove(&testMove, side) == true)
                 {
-                    testMoves.push_back(testMove);
+                    //check and see if move is a corner (coordinates mod 7 == 0)
+                    if (i % 7 == 0 && j % 7 == 0)
+                    {
+                        *moveToPlay = testMove;
+                        board->doMove(moveToPlay, side);
+                        return moveToPlay;
+                    }
+
+                    //check and see if edge next to corner; if it is, prioritize against
+                    if ((testMove.getX() == 0 && testMove.getY() == 1)
+                        ||  (testMove.getX() == 0 && testMove.getY() == 6)
+                        ||  (testMove.getX() == 1 && testMove.getY() == 7)
+                        ||  (testMove.getX() == 6 && testMove.getY() == 1)
+                        ||  (testMove.getX() == 7 && testMove.getY() == 6)
+                        ||  (testMove.getX() == 7 && testMove.getY() == 1)
+                        ||  (testMove.getX() == 6 && testMove.getY() == 0)
+                        ||  (testMove.getX() == 1 && testMove.getY() == 0)
+                        ||  (testMove.getX() == 1 && testMove.getY() == 1)
+                        ||  (testMove.getX() == 1 && testMove.getY() == 6)
+                        ||  (testMove.getX() == 6 && testMove.getY() == 1)
+                        ||  (testMove.getX() == 6 && testMove.getY() == 6))
+                    {
+                        badMoves.push_back(testMove);
+                    }
+
+                    else
+                    { 
+                        testMoves.push_back(testMove);
+                    }
                 }
             }
         }
@@ -77,9 +108,29 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         return nullptr;
     }
 
-    int randomIndex = rand() % testMoves.size();
-    Move * moveToPlay = new Move(0,0);
-	*moveToPlay = testMoves[randomIndex];
+    for (unsigned int i = 0; i < testMoves.size(); i++)
+    {
+        //prioritize edges still
+        if (testMoves[i].getX() % 7 == 0 || testMoves[i].getY() % 7 == 0)
+        {
+            *moveToPlay = testMoves[i];
+            board->doMove(moveToPlay, side);
+        }
+    }
+    if (testMoves.size() == 0)
+    {
+        int randomIndex = rand() % badMoves.size();
+        *moveToPlay = badMoves[randomIndex];
+        board->doMove(moveToPlay, side);
+    }
+
+    else
+    {
+        int randomIndex = rand() % testMoves.size();
+        Move * moveToPlay = new Move(0,0);
+    	*moveToPlay = testMoves[randomIndex];
+    }
+
     board->doMove(moveToPlay, side);
     return moveToPlay;
 }
