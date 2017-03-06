@@ -62,7 +62,6 @@ bool Board::hasMoves(Side side) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             Move move(i, j);
-            std::cerr << move.getX() << move.getY() << std::endl;
             if (checkMove(&move, side)) return true;
         }
     }

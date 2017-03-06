@@ -33,6 +33,8 @@ Player::Player(Side side) {
  * Destructor for the player.
  */
 Player::~Player() {
+    delete board;
+    
 }
 
 /*
@@ -55,31 +57,24 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      */
     board->doMove(opponentsMove, oppSide);
     vector<Move> testMoves;
-
-	std::cerr<<"Here 1" << std::endl;
 	
     if (board->hasMoves(side)) //check and find valid moves for black
     {
-		std::cerr<<"Here 2" << std::endl;
         for (int i = 0; i < 8; i++)
         {
-			std::cerr<<"Here 3" << std::endl;
             for (int j = 0; j < 8; j++)
             {
-				std::cerr<<"Here 4" << std::endl;
                 Move testMove(i, j);
                 if (board->checkMove(&testMove, side) == true)
                 {
-					std::cerr<<"Here 5" << std::endl;
                     testMoves.push_back(testMove);
-                    std::cerr << "found available move" << testMove.getX() << " " << testMove.getY() << std::endl;
                 }
             }
         }
     }
     else
     {
-        std::cerr << "no moves available" << std::endl;
+        return nullptr;
     }
 
     int randomIndex = rand() % testMoves.size();
