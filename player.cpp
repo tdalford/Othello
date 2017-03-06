@@ -79,18 +79,18 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                     }
 
                     //check and see if edge next to corner; if it is, prioritize against
-                    if ((testMove.getX() == 0 && testMove.getY() == 1)
-                        ||  (testMove.getX() == 0 && testMove.getY() == 6)
-                        ||  (testMove.getX() == 1 && testMove.getY() == 7)
-                        ||  (testMove.getX() == 6 && testMove.getY() == 1)
-                        ||  (testMove.getX() == 7 && testMove.getY() == 6)
-                        ||  (testMove.getX() == 7 && testMove.getY() == 1)
-                        ||  (testMove.getX() == 6 && testMove.getY() == 0)
-                        ||  (testMove.getX() == 1 && testMove.getY() == 0)
-                        ||  (testMove.getX() == 1 && testMove.getY() == 1)
-                        ||  (testMove.getX() == 1 && testMove.getY() == 6)
-                        ||  (testMove.getX() == 6 && testMove.getY() == 1)
-                        ||  (testMove.getX() == 6 && testMove.getY() == 6))
+                    if ((i == 0 && j == 1)
+                        ||  (i == 0 && j == 6)
+                        ||  (i == 1 && j == 7)
+                        ||  (i == 6 && j == 1)
+                        ||  (i == 7 && j == 6)
+                        ||  (i == 7 && j == 1)
+                        ||  (i == 6 && j == 0)
+                        ||  (i == 1 && j == 0)
+                        ||  (i == 1 && j == 1)
+                        ||  (i == 1 && j == 6)
+                        ||  (i == 6 && j == 1)
+                        ||  (i == 6 && j == 6))
                     {
                         badMoves.push_back(testMove);
                     }
@@ -115,19 +115,18 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         {
             *moveToPlay = testMoves[i];
             board->doMove(moveToPlay, side);
+            return moveToPlay;
         }
     }
     if (testMoves.size() == 0)
     {
         int randomIndex = rand() % badMoves.size();
         *moveToPlay = badMoves[randomIndex];
-        board->doMove(moveToPlay, side);
     }
 
     else
     {
         int randomIndex = rand() % testMoves.size();
-        Move * moveToPlay = new Move(0,0);
     	*moveToPlay = testMoves[randomIndex];
     }
 
