@@ -1,4 +1,6 @@
 #include "player.hpp"
+#include <vector>
+
 
 /*
  * Constructor for the player; initialize everything here. The side your AI is
@@ -14,6 +16,17 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+
+    Board board = Board();
+    this->side = side;
+    if (side == BLACK)
+    {
+        oppSide = WHITE;
+    }
+    else
+    {
+        oppSide = BLACK;
+    }
 }
 
 /*
@@ -40,6 +53,26 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    int x = 0;
-    return nullptr;
+    board.doMove(opponentsMove, oppSide);
+    cout << "made opponent's move" << endl;
+    vector<Move> testMoves;
+
+    if (board.hasMoves(side)) //check and find valid moves for black
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                Move testMove(i, j);
+                if (board.checkMove(&testMove, side) == true)
+                {
+                    testMoves.push_back(testMove);
+                }
+            }
+        }
+    }
+
+    int randomIndex = rand() % testMoves.size();
+    Move moveToPlay = testMoves[randomIndex];
+    return &moveToPlay;
 }
