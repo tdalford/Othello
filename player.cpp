@@ -17,7 +17,7 @@ Player::Player(Side side) {
      * 30 seconds.
      */
 
-    Board board = Board();
+    board = new Board();
     this->side = side;
     if (side == BLACK)
     {
@@ -53,26 +53,43 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    board.doMove(opponentsMove, oppSide);
-    cout << "made opponent's move" << endl;
+    // std::cerr << "black = " << board->count(BLACK) << endl;
+    // std::cerr << "white = " << board->count(WHITE) << endl;
+    // std::cerr << "black = " << board->countBlack() << endl;
+    // std::cerr << "white = " << board->countWhite() << endl;
+    board->doMove(opponentsMove, oppSide);
+    // std::cerr << "opponents's side = " << oppSide << std::endl;
+    // std::cerr << "x = " << opponentsMove->getX() << std::endl;
+    // std::cerr << "y = " << opponentsMove->getY() << std::endl;
+    // std::cerr << "made opponent's move" << std::endl;
     vector<Move> testMoves;
+    // std::cerr << "made vector" << std::endl;
 
-    if (board.hasMoves(side)) //check and find valid moves for black
+
+    if (board->hasMoves(side)) //check and find valid moves for black
     {
+        //std::cerr << "got in loop" << std::endl;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
                 Move testMove(i, j);
-                if (board.checkMove(&testMove, side) == true)
+                //cerr << board.checkMove(&testMove, side) << endl;
+                if (board->checkMove(&testMove, side) == true)
                 {
                     testMoves.push_back(testMove);
+                    std::cerr << "found available move" << testMove.getX() << " " << testMove.getY() << std::endl;
                 }
             }
         }
     }
+    else
+    {
+        std::cerr << "no moves available" << std::endl;
+    }
 
     int randomIndex = rand() % testMoves.size();
     Move moveToPlay = testMoves[randomIndex];
+    board->doMove(&moveToPlay, side);
     return &moveToPlay;
 }

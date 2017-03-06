@@ -18,7 +18,7 @@ public:
     bool testingMinimax;
     Side side;
     Side oppSide;
-    Board board;
+    Board* board;
 };
 
 #endif
