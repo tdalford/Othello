@@ -22,7 +22,6 @@ Board::~Board() {
  * Returns a copy of this board.
  */
 Board *Board::copy() {
-	//Hello there 
     Board *newBoard = new Board();
     newBoard->black = black;
     newBoard->taken = taken;

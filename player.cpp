@@ -37,8 +37,77 @@ Player::~Player() {
 
 }
 
-Move * Player::minimax(int node, int depth, side player, bool isMaximising)
+vector<Move> Player::possibleMoves(Side player, Board* currBoard)
 {
+    vector<Move> possibles;
+    if (currBoard->hasMoves(side)) //check and find valid moves for black
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                Move testMove(i, j);
+                if (currBoard->checkMove(&testMove, side) == true)
+                {
+                    possibles.push_back(testMove);
+                }
+            }
+        }
+    }
+    else
+    {
+        return possibles;
+    }
+
+    return possibles;
+}
+
+int Player::minimax(int depth, Side player, Board* currBoard)
+{
+    Side oppPlayer;
+    if (player == BLACK)
+    {
+        oppPlayer = WHITE;
+    }
+    else
+    {
+        oppPlayer = BLACK;
+    }
+    Move * testMove = new Move(0,0);
+    if (depth == 0)
+    {
+        //evaluate board for given player, don't have anything here yet
+        return 1;
+    }
+
+    int bestScore;
+    vector<Move> possibles = possibleMoves(player, currBoard);
+    for (unsigned int i = 0; i < possibles.size(); i++)
+    {
+        Board * boardCopy = new Board();
+        boardCopy = currBoard->copy();
+        *testMove = possibles[i];
+        boardCopy->doMove(testMove, oppPlayer);
+        int score = minimax(depth - 1, player, boardCopy);
+        if (player == side) //maximise
+        {
+            bestScore = -100;
+            if (score > bestScore)
+            {
+                bestScore = score;
+            }
+        }
+        else //minimise
+        {   
+            bestScore = 100;
+            if (score < bestScore)
+            {
+                bestScore = score;
+            }
+        }
+        delete boardCopy;
+    }
+    return bestScore;
 
 }
 
@@ -62,78 +131,106 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      */
     board->doMove(opponentsMove, oppSide);
     vector<Move> testMoves;
-    vector<Move> badMoves;
-    Move * moveToPlay = new Move(0,0);
-	
-    if (board->hasMoves(side)) //check and find valid moves for black
+    //vector<Move> badMoves;
+    Move * moveToPlay = new Move(0, 0);
+    Move * testMove = new Move(0, 0);
+
+    int bestScore = 0;
+    vector<Move> possibles = possibleMoves(side, board);
+    for (unsigned int i = 0; i < possibles.size(); i++)
     {
-        for (int i = 0; i < 8; i++)
+        Board* boardCopy = new Board();
+        boardCopy = board->copy();
+        *testMove = possibles[i];
+        boardCopy->doMove(testMove, side);
+        int score = minimax(0, side, boardCopy);
+        cerr << score << endl;
+        if (score > bestScore)
         {
-            for (int j = 0; j < 8; j++)
-            {
-                Move testMove(i, j);
-                if (board->checkMove(&testMove, side) == true)
-                {
-                    //check and see if move is a corner (coordinates mod 7 == 0)
-                    if (i % 7 == 0 && j % 7 == 0)
-                    {
-                        *moveToPlay = testMove;
-                        board->doMove(moveToPlay, side);
-                        return moveToPlay;
-                    }
-
-                    //check and see if edge next to corner; if it is, prioritize against
-                    if ((i == 0 && j == 1)
-                        ||  (i == 0 && j == 6)
-                        ||  (i == 1 && j == 7)
-                        ||  (i == 6 && j == 1)
-                        ||  (i == 7 && j == 6)
-                        ||  (i == 7 && j == 1)
-                        ||  (i == 6 && j == 0)
-                        ||  (i == 1 && j == 0)
-                        ||  (i == 1 && j == 1)
-                        ||  (i == 1 && j == 6)
-                        ||  (i == 6 && j == 1)
-                        ||  (i == 6 && j == 6))
-                    {
-                        badMoves.push_back(testMove);
-                    }
-
-                    else
-                    { 
-                        testMoves.push_back(testMove);
-                    }
-                }
-            }
+            bestScore = score;
+            *moveToPlay = possibles[i];
         }
+        delete boardCopy;
     }
-    else
+
+
+    if (possibles.size() == 0)
     {
         return nullptr;
     }
 
-    for (unsigned int i = 0; i < testMoves.size(); i++)
-    {
-        //prioritize edges still
-        if (testMoves[i].getX() % 7 == 0 || testMoves[i].getY() % 7 == 0)
-        {
-            *moveToPlay = testMoves[i];
-            board->doMove(moveToPlay, side);
-            return moveToPlay;
-        }
-    }
-    if (testMoves.size() == 0)
-    {
-        int randomIndex = rand() % badMoves.size();
-        *moveToPlay = badMoves[randomIndex];
-    }
-
-    else
-    {
-        int randomIndex = rand() % testMoves.size();
-    	*moveToPlay = testMoves[randomIndex];
-    }
-
     board->doMove(moveToPlay, side);
     return moveToPlay;
+	
+    // if (board->hasMoves(side)) //check and find valid moves for black
+    // {
+    //     for (int i = 0; i < 8; i++)
+    //     {
+    //         for (int j = 0; j < 8; j++)
+    //         {
+    //             Move testMove(i, j);
+    //             if (board->checkMove(&testMove, side) == true)
+    //             {
+    //                 //check and see if move is a corner (coordinates mod 7 == 0)
+    //                 if (i % 7 == 0 && j % 7 == 0)
+    //                 {
+    //                     *moveToPlay = testMove;
+    //                     board->doMove(moveToPlay, side);
+    //                     return moveToPlay;
+    //                 }
+
+    //                 //check and see if edge next to corner; if it is, prioritize against
+    //                 if ((i == 0 && j == 1)
+    //                     ||  (i == 0 && j == 6)
+    //                     ||  (i == 1 && j == 7)
+    //                     ||  (i == 6 && j == 1)
+    //                     ||  (i == 7 && j == 6)
+    //                     ||  (i == 7 && j == 1)
+    //                     ||  (i == 6 && j == 0)
+    //                     ||  (i == 1 && j == 0)
+    //                     ||  (i == 1 && j == 1)
+    //                     ||  (i == 1 && j == 6)
+    //                     ||  (i == 6 && j == 1)
+    //                     ||  (i == 6 && j == 6))
+    //                 {
+    //                     badMoves.push_back(testMove);
+    //                 }
+
+    //                 else
+    //                 { 
+    //                     testMoves.push_back(testMove);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     return nullptr;
+    // }
+
+    // for (unsigned int i = 0; i < testMoves.size(); i++)
+    // {
+    //     //prioritize edges still
+    //     if (testMoves[i].getX() % 7 == 0 || testMoves[i].getY() % 7 == 0)
+    //     {
+    //         *moveToPlay = testMoves[i];
+    //         board->doMove(moveToPlay, side);
+    //         return moveToPlay;
+    //     }
+    // }
+    // if (testMoves.size() == 0)
+    // {
+    //     int randomIndex = rand() % badMoves.size();
+    //     *moveToPlay = badMoves[randomIndex];
+    // }
+
+    // else
+    // {
+    //     int randomIndex = rand() % testMoves.size();
+    // 	   *moveToPlay = testMoves[randomIndex];
+    // }
+
+    // board->doMove(moveToPlay, side);
+    // return moveToPlay;
 }
