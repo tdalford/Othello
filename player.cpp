@@ -40,14 +40,14 @@ Player::~Player() {
 vector<Move> Player::possibleMoves(Side player, Board* currBoard)
 {
     vector<Move> possibles;
-    if (currBoard->hasMoves(side)) //check and find valid moves for black
+    if (currBoard->hasMoves(player)) //check and find valid moves for black
     {
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
                 Move testMove(i, j);
-                if (currBoard->checkMove(&testMove, side) == true)
+                if (currBoard->checkMove(&testMove, player) == true)
                 {
                     possibles.push_back(testMove);
                 }
@@ -64,6 +64,10 @@ vector<Move> Player::possibleMoves(Side player, Board* currBoard)
 
 int Player::minimax(int depth, Side player, Board* currBoard)
 {
+    int numWhite = currBoard->countWhite();
+    int numBlack = currBoard->countBlack();
+    //cerr << "num Black = " << numBlack << endl;
+    //cerr << "num White = " << numWhite << endl;
     Side oppPlayer;
     if (player == BLACK)
     {
@@ -74,21 +78,39 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         oppPlayer = BLACK;
     }
     Move * testMove = new Move(0,0);
+    //cerr << "depth = " << depth << endl;
     if (depth == 0)
     {
         //evaluate board for given player, don't have anything here yet
-        return 1;
+        // cerr << "final num Black = " << numBlack << endl;
+        // cerr << "final num White = " << numWhite << endl;
+        if (player == WHITE)
+        {
+            return (numWhite - numBlack);
+        }
+        else
+        {
+            return (numBlack - numWhite);
+        }
+
     }
 
     int bestScore;
-    vector<Move> possibles = possibleMoves(player, currBoard);
+    vector<Move> possibles = possibleMoves(oppPlayer, currBoard);
+    for (unsigned int i = 0; i < possibles.size(); i++)
+    {
+        //cerr << "possible move " << possibles[i].getX() << " " << possibles[i].getY() << endl;
+    }
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
         Board * boardCopy = new Board();
         boardCopy = currBoard->copy();
         *testMove = possibles[i];
+        //cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
         boardCopy->doMove(testMove, oppPlayer);
-        int score = minimax(depth - 1, player, boardCopy);
+        //cerr << "did move" << endl;
+        int score = minimax(depth - 1, oppPlayer, boardCopy);
+        //cerr << score << endl;
         if (player == side) //maximise
         {
             bestScore = -100;
@@ -135,17 +157,27 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move * moveToPlay = new Move(0, 0);
     Move * testMove = new Move(0, 0);
 
-    int bestScore = 0;
+    int numWhite = board->countWhite();
+    int numBlack = board->countBlack();
+    cerr << "initial num Black = " << numBlack << endl;
+    cerr << "initial num White = " << numWhite << endl;
+
+    int bestScore = 100;
     vector<Move> possibles = possibleMoves(side, board);
+    for (unsigned int i = 0; i < possibles.size(); i++)
+    {
+        cerr << "possible move " << possibles[i].getX() << " " << possibles[i].getY() << endl;
+    }
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
         Board* boardCopy = new Board();
         boardCopy = board->copy();
         *testMove = possibles[i];
         boardCopy->doMove(testMove, side);
-        int score = minimax(0, side, boardCopy);
-        cerr << score << endl;
-        if (score > bestScore)
+        cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
+        int score = minimax(1, side, boardCopy);
+        cerr << "score = " << score << endl;
+        if (score < bestScore)
         {
             bestScore = score;
             *moveToPlay = possibles[i];
