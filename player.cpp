@@ -96,13 +96,9 @@ int Player::minimax(int depth, Side player, Board* currBoard)
     Move * testMove = new Move(0,0);
     int bestScore;
     vector<Move> possibles = possibleMoves(oppPlayer, currBoard);
-    for (unsigned int i = 0; i < possibles.size(); i++)
-    {
-        //cerr << "possible move " << possibles[i].getX() << " " << possibles[i].getY() << endl;
-    }
     if (possibles.size() == 0)
     {
-        //cerr << "have to pass" << endl;
+        //have to pass
         int score = minimax(depth - 1, oppPlayer, currBoard);
         if (player == side) //maximise
         {
@@ -127,12 +123,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         Board * boardCopy = new Board();
         boardCopy = currBoard->copy();
         *testMove = possibles[i];
-        //cerr << "current test " << testMove->getX() << " " << testMove->getY() << " depth = " << depth << endl;
-        boardCopy->doMove(testMove, oppPlayer);
-        //cerr << "did move" << endl;
         int score = minimax(depth - 1, oppPlayer, boardCopy);
-        //cerr << "mini score = " << score << ", " << depth << ", " << "move = " << testMove->getX() << " " << testMove->getY() << endl;
-        if (player == side) //maximise
         {
             bestScore = -100;
             if (score > bestScore)
@@ -169,10 +160,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /*
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */
+
     board->doMove(opponentsMove, oppSide);
     vector<Move> testMoves;
     //vector<Move> badMoves;
@@ -188,17 +176,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         depth = 4;
     }
 
-    //int numWhite = board->countWhite();
-    //int numBlack = board->countBlack();
-    //cerr << "initial num Black = " << numBlack << endl;
-    //cerr << "initial num White = " << numWhite << endl;
-
     int bestScore = 100;
     vector<Move> possibles = possibleMoves(side, board);
-    for (unsigned int i = 0; i < possibles.size(); i++)
-    {
-        //cerr << "possible move " << possibles[i].getX() << " " << possibles[i].getY() << endl;
-    }
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
         Board* boardCopy = new Board();
