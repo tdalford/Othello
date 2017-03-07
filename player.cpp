@@ -79,18 +79,8 @@ int Player::minimax(int depth, Side player, Board* currBoard)
     }
     if (depth == 0)
     {
-        //evaluate board for given player, don't have anything here yet
-        // cerr << "final num Black = " << numBlack << endl;
-        // cerr << "final num White = " << numWhite << endl;
-        if (player == WHITE)
-        {
-            return abs(numWhite - numBlack);
-        }
-        else
-        {
-            return abs(numBlack - numWhite);
-        }
-
+        //evaluate board for given player
+        return abs(numBlack - numWhite);
     }
 
     Move * testMove = new Move(0,0);
@@ -123,7 +113,9 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         Board * boardCopy = new Board();
         boardCopy = currBoard->copy();
         *testMove = possibles[i];
+        boardCopy->doMove(testMove, oppPlayer);
         int score = minimax(depth - 1, oppPlayer, boardCopy);
+        if (player == side) //maximise
         {
             bestScore = -100;
             if (score > bestScore)
