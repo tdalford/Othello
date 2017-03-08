@@ -62,6 +62,8 @@ vector<Move> Player::possibleMoves(Side player, Board* currBoard)
     return possibles;
 }
 
+
+
 int Player::minimax(int depth, Side player, Board* currBoard)
 {
     //int numWhite = currBoard->countWhite();
@@ -88,7 +90,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
 
         //evaluate board for given player
 		int cornWeight = 100;
-		int nxtCornWeight = 100;
+		int nxtCornWeight = 50;
 		int edgeWeight = 5;
         cerr << currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player) << endl;
         return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player);

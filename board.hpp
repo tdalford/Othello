@@ -24,6 +24,8 @@ public:
     ~Board();
     Board *copy();
 
+
+	Move closestCorn(Move *m);
 	int evalBoard(int edgeWeight, int cornWeight, int nxtCornWeight, Side side);
 	bool isCorn(Move *m);
 	bool isNxtCorn(Move *m);

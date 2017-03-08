@@ -110,6 +110,18 @@ bool Board::isEdge(Move *m){
 	return false;
 }
 
+Move Board::closestCorn(Move *m){
+	int x=0;
+	int y=0;
+	if(m->getX() >=4){
+		x = 7;
+	}
+	if(m->getY() >=4){
+		y = 7;
+	}
+	return Move(x,y);
+}
+
 int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side side){
 	int score = 0;
     Side oppSide;
@@ -132,7 +144,16 @@ int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side sid
 					score += cornWeight;
 				}
 				else if(isNxtCorn(testMove)){
-					//score -= nxtCornWeight;
+					Move corn = closestCorn(testMove);
+					if(get(side, corn.getX(), corn.getY())){
+						score++;//= nxtCornWeight;
+					}
+					else if(get(oppSide, corn.getX(), corn.getY())){
+						score++;
+					}
+					else{
+						score -= nxtCornWeight;
+					}
 				}
 				else {
 					score++;
@@ -146,7 +167,16 @@ int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side sid
 					score -= cornWeight;
 				}
 				else if(isNxtCorn(testMove)){
-					//score += nxtCornWeight;
+					Move corn = closestCorn(testMove);
+					if(get(oppSide, corn.getX(), corn.getY())){
+						score--;//= nxtCornWeight;
+					}
+					else if(get(side, corn.getX(), corn.getY())){
+						score--;
+					}
+					else{
+						score += nxtCornWeight;
+					}
 				}
 				else {
 					score--;
