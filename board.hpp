@@ -24,6 +24,10 @@ public:
     ~Board();
     Board *copy();
 
+	int evalBoard(int edgeWeight, int cornWeight, int nxtCornWeight, Side side);
+	bool isCorn(Move *m);
+	bool isNxtCorn(Move *m);
+	bool isEdge(Move *m);
     bool isDone();
     bool hasMoves(Side side);
     bool checkMove(Move *m, Side side);
