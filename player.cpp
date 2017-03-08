@@ -62,14 +62,63 @@ vector<Move> Player::possibleMoves(Side player, Board* currBoard)
     return possibles;
 }
 
+int Player::minimax2(int depth, Side player, Board* currBoard){
+	if (depth == 0)
+    {
 
+        if (testingMinimax)
+        {
+            cerr << currBoard->evalBoard(2, 15, 6, player) << endl;
+            return abs(currBoard->countWhite() - currBoard->countBlack());
+        }
+
+        //evaluate board for given player
+		int cornWeight = 100;
+		int nxtCornWeight = 50;
+		int edgeWeight = 5;
+        cerr << currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player) << endl;
+        return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player);
+    }
+
+	if(player == side){
+		int bestVal = -1e8;
+		vector<Move> possibles = possibleMoves(player, currBoard);
+		Move * testMove = new Move(0,0);
+
+		for(unsigned int i=0; i<possibles.size(); i++){
+			Board * boardCopy = currBoard->copy();
+			*testMove = possibles[i];
+			boardCopy->doMove(testMove, player);
+			Side oppPlayer;
+			if(player == WHITE){oppPlayer = BLACK;}
+			else {oppPlayer = WHITE;}
+			int score = minimax(depth - 1, oppPlayer, boardCopy);
+			bestVal = std::max(bestVal, score);
+		}
+		return bestVal;
+	}
+	else{
+		int bestVal = 1e8;
+		vector<Move> possibles = possibleMoves(player, currBoard);
+		Move * testMove = new Move(0,0);
+
+		for(unsigned int i=0; i<possibles.size(); i++){
+			Board * boardCopy = currBoard->copy();
+			*testMove = possibles[i];
+			boardCopy->doMove(testMove, player);
+			Side oppPlayer;
+			if(player == WHITE) {oppPlayer = BLACK;}
+			else {oppPlayer = WHITE;}
+			int score = minimax(depth - 1, oppPlayer, boardCopy);
+			bestVal = std::min(bestVal, score);
+		}
+		return bestVal;
+	}
+}
 
 int Player::minimax(int depth, Side player, Board* currBoard)
 {
-    //int numWhite = currBoard->countWhite();
-    //int numBlack = currBoard->countBlack();
-    // cerr << "num Black = " << numBlack << endl;
-    // cerr << "num White = " << numWhite << endl;
+
     Side oppPlayer;
     if (player == BLACK)
     {
@@ -84,7 +133,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
 
         if (testingMinimax)
         {
-            cerr << currBoard->evalBoard(2, 15, 6, player) << endl;
+            cerr << currBoard->evalBoard(2, 20, 4, player) << endl;
             return abs(currBoard->countWhite() - currBoard->countBlack());
         }
 
@@ -146,7 +195,6 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         }
         delete boardCopy;
     }
-    //cout << "bestScore = " << bestScore << endl;
     return bestScore;
 
 }
@@ -178,7 +226,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
     else
     {
-        depth = 1;
+        depth = 3;
     }
 
     int bestScore = 1000;
@@ -190,7 +238,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         *testMove = possibles[i];
         boardCopy->doMove(testMove, side);
         //cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
-        int score = minimax(depth, side, boardCopy);
+        int score = minimax2(depth, side, boardCopy);
         //cerr << "score = " << score << endl;
         if (score < bestScore)
         {
