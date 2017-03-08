@@ -110,8 +110,17 @@ bool Board::isEdge(Move *m){
 	return false;
 }
 
-int Board::evalBoard(int edgeWeight, int cornWeight, int nxtCornWeight, Side side){
+int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side side){
 	int score = 0;
+    Side oppSide;
+    if (side == WHITE)
+    {
+        oppSide = BLACK;
+    }
+    else
+    {
+        oppSide = WHITE;
+    }
 	for(int i=0; i<8; i++){
 		for(int j=0; j<8; j++){
 			Move * testMove = new Move(i,j);
@@ -123,13 +132,13 @@ int Board::evalBoard(int edgeWeight, int cornWeight, int nxtCornWeight, Side sid
 					score += cornWeight;
 				}
 				else if(isNxtCorn(testMove)){
-					score -= nxtCornWeight;
+					//score -= nxtCornWeight;
 				}
 				else {
 					score++;
 				}
 			}
-			else{
+			else if (get(oppSide, i,j)){
 				if(isEdge(testMove)){
 					score -= edgeWeight;
 				}
@@ -137,7 +146,7 @@ int Board::evalBoard(int edgeWeight, int cornWeight, int nxtCornWeight, Side sid
 					score -= cornWeight;
 				}
 				else if(isNxtCorn(testMove)){
-					score += nxtCornWeight;
+					//score += nxtCornWeight;
 				}
 				else {
 					score--;
