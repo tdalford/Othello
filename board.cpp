@@ -67,6 +67,88 @@ bool Board::hasMoves(Side side) {
     return false;
 }
 
+bool Board::isCorn(Move *m){
+	if(m != nullptr){
+		if(m->getX()%7==0 && m->getY()%7==0){
+			return true;
+		}			
+	}
+	return false;
+}
+
+bool Board::isNxtCorn(Move *m){
+	if(m!=nullptr){
+		if ((m->getX() == 0 && m->getY() == 1)
+		||  (m->getX() == 0 && m->getY() == 6)
+		||  (m->getX() == 1 && m->getY() == 7)
+		||  (m->getX() == 6 && m->getY() == 1)
+		||  (m->getX() == 7 && m->getY() == 6)
+		||  (m->getX() == 7 && m->getY() == 1)
+		||  (m->getX() == 6 && m->getY() == 0)
+		||  (m->getX() == 1 && m->getY() == 0)
+		||  (m->getX() == 1 && m->getY() == 1)
+		||  (m->getX() == 1 && m->getY() == 6)
+		||  (m->getX() == 6 && m->getY() == 1)
+		||  (m->getX() == 6 && m->getY() == 6))
+		{
+			return true;
+		}
+	}	
+	return false;
+
+}
+
+bool Board::isEdge(Move *m){
+	if(m!=nullptr){
+		if((m->getX() == 0 || m->getX() == 7) && (m->getY()>=2 && m->getY()<=5)){
+			return true;
+		}
+		else if((m->getY() == 0 || m->getY() == 7) && (m->getX()>=2 && m->getX()<=5)){
+			return true;
+		}
+	}
+	return false;
+}
+
+int Board::evalBoard(int edgeWeight, int cornWeight, int nxtCornWeight, Side side){
+	int score = 0;
+	for(int i=0; i<8; i++){
+		for(int j=0; j<8; j++){
+			Move * testMove = new Move(i,j);
+			if(get(side,i,j)){
+				if(isEdge(testMove)){
+					score += edgeWeight;
+				}
+				else if(isCorn(testMove)){
+					score += cornWeight;
+				}
+				else if(isNxtCorn(testMove)){
+					score -= nxtCornWeight;
+				}
+				else {
+					score++;
+				}
+			}
+			else{
+				if(isEdge(testMove)){
+					score -= edgeWeight;
+				}
+				else if(isCorn(testMove)){
+					score -= cornWeight;
+				}
+				else if(isNxtCorn(testMove)){
+					score += nxtCornWeight;
+				}
+				else {
+					score--;
+				}
+			}
+		}
+	}
+	return score;
+}
+
+
 /*
  * Returns true if a move is legal for the given side; false otherwise.
  */
