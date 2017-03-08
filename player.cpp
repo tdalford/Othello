@@ -66,8 +66,8 @@ int Player::minimax(int depth, Side player, Board* currBoard)
 {
     int numWhite = currBoard->countWhite();
     int numBlack = currBoard->countBlack();
-    //cerr << "num Black = " << numBlack << endl;
-    //cerr << "num White = " << numWhite << endl;
+    // cerr << "num Black = " << numBlack << endl;
+    // cerr << "num White = " << numWhite << endl;
     Side oppPlayer;
     if (player == BLACK)
     {
@@ -77,40 +77,44 @@ int Player::minimax(int depth, Side player, Board* currBoard)
     {
         oppPlayer = BLACK;
     }
-    Move * testMove = new Move(0,0);
-    //cerr << "depth = " << depth << endl;
     if (depth == 0)
     {
-        //evaluate board for given player, don't have anything here yet
-        // cerr << "final num Black = " << numBlack << endl;
-        // cerr << "final num White = " << numWhite << endl;
-        if (player == WHITE)
-        {
-            return (numWhite - numBlack);
-        }
-        else
-        {
-            return (numBlack - numWhite);
-        }
-
+        //evaluate board for given player
+        return abs(numBlack - numWhite);
     }
 
+    Move * testMove = new Move(0,0);
     int bestScore;
     vector<Move> possibles = possibleMoves(oppPlayer, currBoard);
-    for (unsigned int i = 0; i < possibles.size(); i++)
+    if (possibles.size() == 0)
     {
-        //cerr << "possible move " << possibles[i].getX() << " " << possibles[i].getY() << endl;
+        //have to pass
+        int score = minimax(depth - 1, oppPlayer, currBoard);
+        if (player == side) //maximise
+        {
+            bestScore = -100;
+            if (score > bestScore)
+            {
+                bestScore = score;
+            }
+        }
+        else //minimise
+        {   
+            bestScore = 100;
+            if (score < bestScore)
+            {
+                bestScore = score;
+            }
+        }
     }
+
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
         Board * boardCopy = new Board();
         boardCopy = currBoard->copy();
         *testMove = possibles[i];
-        //cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
         boardCopy->doMove(testMove, oppPlayer);
-        //cerr << "did move" << endl;
         int score = minimax(depth - 1, oppPlayer, boardCopy);
-        //cerr << score << endl;
         if (player == side) //maximise
         {
             bestScore = -100;
@@ -129,6 +133,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         }
         delete boardCopy;
     }
+    //cout << "bestScore = " << bestScore << endl;
     return bestScore;
 
 }
@@ -147,36 +152,33 @@ int Player::minimax(int depth, Side player, Board* currBoard)
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /*
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */
+
     board->doMove(opponentsMove, oppSide);
     vector<Move> testMoves;
     //vector<Move> badMoves;
     Move * moveToPlay = new Move(0, 0);
     Move * testMove = new Move(0, 0);
-
-    int numWhite = board->countWhite();
-    int numBlack = board->countBlack();
-    cerr << "initial num Black = " << numBlack << endl;
-    cerr << "initial num White = " << numWhite << endl;
+    int depth;
+    if (testingMinimax)
+    {   
+        depth = 1;
+    }
+    else
+    {
+        depth = 4;
+    }
 
     int bestScore = 100;
     vector<Move> possibles = possibleMoves(side, board);
-    for (unsigned int i = 0; i < possibles.size(); i++)
-    {
-        cerr << "possible move " << possibles[i].getX() << " " << possibles[i].getY() << endl;
-    }
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
         Board* boardCopy = new Board();
         boardCopy = board->copy();
         *testMove = possibles[i];
         boardCopy->doMove(testMove, side);
-        cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
-        int score = minimax(1, side, boardCopy);
-        cerr << "score = " << score << endl;
+        //cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
+        int score = minimax(depth, side, boardCopy);
+        //cerr << "score = " << score << endl;
         if (score < bestScore)
         {
             bestScore = score;
