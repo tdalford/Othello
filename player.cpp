@@ -64,8 +64,8 @@ vector<Move> Player::possibleMoves(Side player, Board* currBoard)
 
 int Player::minimax(int depth, Side player, Board* currBoard)
 {
-    int numWhite = currBoard->countWhite();
-    int numBlack = currBoard->countBlack();
+    //int numWhite = currBoard->countWhite();
+    //int numBlack = currBoard->countBlack();
     // cerr << "num Black = " << numBlack << endl;
     // cerr << "num White = " << numWhite << endl;
     Side oppPlayer;
@@ -80,7 +80,10 @@ int Player::minimax(int depth, Side player, Board* currBoard)
     if (depth == 0)
     {
         //evaluate board for given player
-        return abs(numBlack - numWhite);
+		int cornWeight = 6;
+		int nxtCornWeight = 15;
+		int edgeWeight = 2;
+        return board->evalBoard(edgeWeight, nxtCornWeight, cornWeight, side);
     }
 
     Move * testMove = new Move(0,0);
@@ -92,7 +95,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         int score = minimax(depth - 1, oppPlayer, currBoard);
         if (player == side) //maximise
         {
-            bestScore = -100;
+            bestScore = -1e8;
             if (score > bestScore)
             {
                 bestScore = score;
@@ -100,7 +103,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         }
         else //minimise
         {   
-            bestScore = 100;
+            bestScore = 1e8;
             if (score < bestScore)
             {
                 bestScore = score;
@@ -117,7 +120,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         int score = minimax(depth - 1, oppPlayer, boardCopy);
         if (player == side) //maximise
         {
-            bestScore = -100;
+            bestScore = -1e8;
             if (score > bestScore)
             {
                 bestScore = score;
@@ -125,7 +128,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         }
         else //minimise
         {   
-            bestScore = 100;
+            bestScore = 1e8;
             if (score < bestScore)
             {
                 bestScore = score;
@@ -165,7 +168,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
     else
     {
-        depth = 4;
+        depth = 3;
     }
 
     int bestScore = 100;
