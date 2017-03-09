@@ -133,37 +133,44 @@ int Player::minimax(int depth, Side player, Board* currBoard)
 
         if (testingMinimax)
         {
-            cerr << currBoard->evalBoard(2, 20, 4, player) << endl;
-            return abs(currBoard->countWhite() - currBoard->countBlack());
+            //cerr << currBoard->evalBoard(2, 20, 4, player) << endl;
+            if (side == BLACK)
+            {
+                return (currBoard->countBlack() - currBoard->countWhite());
+            }
+            else
+            {
+                return (currBoard->countWhite() - currBoard->countBlack());
+            }
         }
 
         //evaluate board for given player
 		int cornWeight = 100;
-		int nxtCornWeight = 50;
-		int edgeWeight = 5;
-        cerr << currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player) << endl;
-        return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player);
+		int nxtCornWeight = 200;
+		int edgeWeight = 2;
+        //cerr << currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player) << endl;
+        return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, side);
     }
 
     Move * testMove = new Move(0,0);
     int bestScore;
-    vector<Move> possibles = possibleMoves(oppPlayer, currBoard);
+    vector<Move> possibles = possibleMoves(player, currBoard);
     if (possibles.size() == 0)
     {
         //have to pass
         int score = minimax(depth - 1, oppPlayer, currBoard);
         if (player == side) //maximise
         {
-            bestScore = -1000;
-            if (score > bestScore)
+            bestScore = 1000;
+            if (score < bestScore)
             {
                 bestScore = score;
             }
         }
         else //minimise
         {   
-            bestScore = 1000;
-            if (score < bestScore)
+            bestScore = -1000;
+            if (score > bestScore)
             {
                 bestScore = score;
             }
@@ -175,9 +182,11 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         Board * boardCopy = new Board();
         boardCopy = currBoard->copy();
         *testMove = possibles[i];
-        boardCopy->doMove(testMove, oppPlayer);
+        boardCopy->doMove(testMove, player);
+        //cerr << "curr test " << testMove->getX() << " " << testMove->getY() << endl;
         int score = minimax(depth - 1, oppPlayer, boardCopy);
-        if (player == side) //maximise
+        //cerr << "score = " << score << endl;
+        // if (player == side) //maximise
         {
             bestScore = -1000;
             if (score > bestScore)
@@ -185,14 +194,14 @@ int Player::minimax(int depth, Side player, Board* currBoard)
                 bestScore = score;
             }
         }
-        else //minimise
-        {   
-            bestScore = 1000;
-            if (score < bestScore)
-            {
-                bestScore = score;
-            }
-        }
+        // else //minimise
+        // {   
+        //     bestScore = 1000;
+        //     if (score < bestScore)
+        //     {
+        //         bestScore = score;
+        //     }
+        // }
         delete boardCopy;
     }
     return bestScore;
@@ -229,7 +238,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         depth = 3;
     }
 
-    int bestScore = 1000;
+    int bestScore = -1000;
     vector<Move> possibles = possibleMoves(side, board);
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
@@ -238,9 +247,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         *testMove = possibles[i];
         boardCopy->doMove(testMove, side);
         //cerr << "current test " << testMove->getX() << " " << testMove->getY() << endl;
-        int score = minimax2(depth, side, boardCopy);
-        //cerr << "score = " << score << endl;
-        if (score < bestScore)
+        //int score = minimax2(depth, side, boardCopy);
+        int score = minimax(depth, oppSide, boardCopy);
+        //cerr << "final score = " << score << endl;
+        if (score > bestScore)
         {
             bestScore = score;
             *moveToPlay = possibles[i];
