@@ -122,41 +122,6 @@ Move Board::closestCorn(Move *m){
 	return Move(x,y);
 }
 
-/*
-bool checkImut(Move *m){
-
-	if(m->getX() == 0){
-		Side other = (side == BLACK) ? WHITE : BLACK;
-   		for (int dx = -1; dx <= 1; dx++) {
-            if (dx == 0) continue;
-
-            // Is there a capture in that direction?
-            int x = X + dx;
-            int y = m->getY();
-            if (onBoard(x, y) && get(other, x, y)) {
-                do {
-                    x += dx;
-                } while (onBoard(x, y) && get(side, x, y));
-
-                if (onBoard(x, y) && get(side, x, y)) return true;
-            }
-        }
-	}
-	else if(m->getX() == 7){
-
-	
-	}	
-	if(m->getY() == 0){
-
-
-	}
-	else if(m->getY() == 7){
-
-
-	}
-}
-*/
-
 int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side side){
 	int score = 0;
     Side oppSide;
@@ -181,7 +146,7 @@ int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side sid
 				else if(isNxtCorn(testMove)){
 					Move corn = closestCorn(testMove);
 					if(get(side, corn.getX(), corn.getY())){
-						score++;//= nxtCornWeight;
+						score++;
 					}
 					else if(get(oppSide, corn.getX(), corn.getY())){
 						score++;
@@ -204,7 +169,7 @@ int Board::evalBoard(int edgeWeight, int nxtCornWeight, int cornWeight, Side sid
 				else if(isNxtCorn(testMove)){
 					Move corn = closestCorn(testMove);
 					if(get(oppSide, corn.getX(), corn.getY())){
-						score--;//= nxtCornWeight;
+						score--;
 					}
 					else if(get(side, corn.getX(), corn.getY())){
 						score--;

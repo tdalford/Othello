@@ -77,7 +77,7 @@ int Player::minimax2(int depth, Side player, Board* currBoard){
 		int nxtCornWeight = 50;
 		int edgeWeight = 5;
         cerr << currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player) << endl;
-        return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player);
+        return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, side);
     }
 
 	if(player == side){
@@ -145,9 +145,24 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         }
 
         //evaluate board for given player
-		int cornWeight = 100;
-		int nxtCornWeight = 200;
-		int edgeWeight = 2;
+
+        int cornWeight;
+        int nxtCornWeight;
+        int edgeWeight;
+
+        if (side == BLACK) //change heuristic for given side
+        {
+    		cornWeight = 50;
+    		nxtCornWeight = 60;
+    		edgeWeight = 10;
+        }
+        else
+        {
+            cornWeight = 100;
+            nxtCornWeight = 200;
+            edgeWeight = 2;
+        }
+
         //cerr << currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, player) << endl;
         return currBoard->evalBoard(edgeWeight, nxtCornWeight, cornWeight, side);
     }
@@ -161,7 +176,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         int score = minimax(depth - 1, oppPlayer, currBoard);
         if (player == side) //maximise
         {
-            bestScore = 1000;
+            bestScore = 1e8;
             if (score < bestScore)
             {
                 bestScore = score;
@@ -169,7 +184,7 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         }
         else //minimise
         {   
-            bestScore = -1000;
+            bestScore = -1e8;
             if (score > bestScore)
             {
                 bestScore = score;
@@ -186,22 +201,22 @@ int Player::minimax(int depth, Side player, Board* currBoard)
         //cerr << "curr test " << testMove->getX() << " " << testMove->getY() << endl;
         int score = minimax(depth - 1, oppPlayer, boardCopy);
         //cerr << "score = " << score << endl;
-        // if (player == side) //maximise
+        if (player == side) //maximise
         {
-            bestScore = -1000;
+            bestScore = -1e8;
             if (score > bestScore)
             {
                 bestScore = score;
             }
         }
-        // else //minimise
-        // {   
-        //     bestScore = 1000;
-        //     if (score < bestScore)
-        //     {
-        //         bestScore = score;
-        //     }
-        // }
+        else //minimise
+        {   
+            bestScore = 1e8;
+            if (score < bestScore)
+            {
+                bestScore = score;
+            }
+        }
         delete boardCopy;
     }
     return bestScore;
@@ -238,7 +253,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         depth = 3;
     }
 
-    int bestScore = -1000;
+    int bestScore = -1e8;
     vector<Move> possibles = possibleMoves(side, board);
     for (unsigned int i = 0; i < possibles.size(); i++)
     {
@@ -267,75 +282,4 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     board->doMove(moveToPlay, side);
     return moveToPlay;
 	
-    // if (board->hasMoves(side)) //check and find valid moves for black
-    // {
-    //     for (int i = 0; i < 8; i++)
-    //     {
-    //         for (int j = 0; j < 8; j++)
-    //         {
-    //             Move testMove(i, j);
-    //             if (board->checkMove(&testMove, side) == true)
-    //             {
-    //                 //check and see if move is a corner (coordinates mod 7 == 0)
-    //                 if (i % 7 == 0 && j % 7 == 0)
-    //                 {
-    //                     *moveToPlay = testMove;
-    //                     board->doMove(moveToPlay, side);
-    //                     return moveToPlay;
-    //                 }
-
-    //                 //check and see if edge next to corner; if it is, prioritize against
-    //                 if ((i == 0 && j == 1)
-    //                     ||  (i == 0 && j == 6)
-    //                     ||  (i == 1 && j == 7)
-    //                     ||  (i == 6 && j == 1)
-    //                     ||  (i == 7 && j == 6)
-    //                     ||  (i == 7 && j == 1)
-    //                     ||  (i == 6 && j == 0)
-    //                     ||  (i == 1 && j == 0)
-    //                     ||  (i == 1 && j == 1)
-    //                     ||  (i == 1 && j == 6)
-    //                     ||  (i == 6 && j == 1)
-    //                     ||  (i == 6 && j == 6))
-    //                 {
-    //                     badMoves.push_back(testMove);
-    //                 }
-
-    //                 else
-    //                 { 
-    //                     testMoves.push_back(testMove);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     return nullptr;
-    // }
-
-    // for (unsigned int i = 0; i < testMoves.size(); i++)
-    // {
-    //     //prioritize edges still
-    //     if (testMoves[i].getX() % 7 == 0 || testMoves[i].getY() % 7 == 0)
-    //     {
-    //         *moveToPlay = testMoves[i];
-    //         board->doMove(moveToPlay, side);
-    //         return moveToPlay;
-    //     }
-    // }
-    // if (testMoves.size() == 0)
-    // {
-    //     int randomIndex = rand() % badMoves.size();
-    //     *moveToPlay = badMoves[randomIndex];
-    // }
-
-    // else
-    // {
-    //     int randomIndex = rand() % testMoves.size();
-    // 	   *moveToPlay = testMoves[randomIndex];
-    // }
-
-    // board->doMove(moveToPlay, side);
-    // return moveToPlay;
 }
